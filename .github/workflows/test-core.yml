@@ -1,0 +1,22 @@
+name: REVA.N Core Test
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test-core:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download REVA.N
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run REVA.N Core
+        run: python core/revan_core.py
