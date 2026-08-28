@@ -22,7 +22,7 @@ jobs:
       - name: Instalar pytest
         run: pip install pytest
 
-      - name: Ejecutar prueba del Core
+            - name: Ejecutar pruebas de REVA.N V0
         env:
           PYTHONPATH: ${{ github.workspace }}
-        run: pytest tests/test_core.py -v
+        run: pytest tests/test_core.py tests/test_ai_orchestrator.py -v
