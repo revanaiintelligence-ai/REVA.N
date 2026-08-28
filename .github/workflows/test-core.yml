@@ -23,6 +23,6 @@ jobs:
         run: pip install pytest
 
       - name: Ejecutar prueba del Core
-  env:
-    PYTHONPATH: ${{ github.workspace }}
-  run: pytest tests/test_core.py -v
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: pytest tests/test_core.py -v
