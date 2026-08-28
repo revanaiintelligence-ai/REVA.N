@@ -1,28 +1,28 @@
 name: REVA.N Core Test
 
 on:
-push:
-branches:
-- main
-workflow_dispatch:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
-test-core:
-runs-on: ubuntu-latest
+  test-core:
+    runs-on: ubuntu-latest
 
-steps:
-  - name: Descargar REVA.N
-    uses: actions/checkout@v4
+    steps:
+      - name: Descargar REVA.N
+        uses: actions/checkout@v4
 
-  - name: Configurar Python
-    uses: actions/setup-python@v5
-    with:
-      python-version: "3.12"
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-  - name: Instalar pytest
-    run: pip install pytest
+      - name: Instalar pytest
+        run: pip install pytest
 
-  - name: Ejecutar pruebas de REVA.N V0
-    env:
-      PYTHONPATH: ${{ github.workspace }}
-    run: pytest tests/test_core.py tests/test_ai_orchestrator.py -v
+      - name: Ejecutar pruebas de REVA.N V0
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: pytest tests/test_core.py tests/test_ai_orchestrator.py -v
