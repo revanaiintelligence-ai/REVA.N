@@ -14,7 +14,7 @@ from ai.mock_provider import MockAIProvider
 from ai.orchestrator import AIOrchestrator
 
 
-# Configuración de la aplicación
+# Configuración
 st.set_page_config(
     page_title="REVA.N",
     page_icon="🧠",
@@ -35,14 +35,14 @@ st.write(
 )
 
 
-# Entrada del usuario
+# Entrada
 question = st.text_area(
     "Escribe tu pregunta",
-    placeholder="Ejemplo: ¿Esta propiedad representa una buena oportunidad?"
+    placeholder="Ejemplo: ¿Qué es REVA.N?"
 )
 
 
-# Ejecutar análisis
+# Análisis
 if st.button("ANALIZAR"):
 
     if not question.strip():
@@ -51,22 +51,71 @@ if st.button("ANALIZAR"):
 
     else:
 
-        # Proveedor de IA de prueba
+        # Componentes de REVA.N
         provider = MockAIProvider()
-
-        # Núcleo de REVA.N
         core = REVANCore()
 
-        # Orquestador
         orchestrator = AIOrchestrator(
             provider,
             core
         )
 
-        # Procesamiento
+        # Ejecutar
         result = orchestrator.process(question)
 
+
         # Resultado
+        st.divider()
+
         st.subheader("Resultado REVA.N")
 
-        st.write(result)
+
+        # Mostrar respuesta de IA
+        if isinstance(result, dict):
+
+            ai_response = result.get("ai_response")
+
+            if ai_response:
+                st.markdown("### Respuesta")
+                st.write(ai_response)
+
+
+            # Mostrar análisis del Core
+            core_result = result.get("core_result")
+
+            if core_result:
+
+                st.markdown("### Análisis del Core")
+
+                reasoning = core_result.get("reasoning")
+
+                if reasoning:
+                    st.write(reasoning)
+
+
+                evaluation = core_result.get("evaluation")
+
+                if evaluation:
+
+                    st.markdown("### Evaluación")
+
+                    status = evaluation.get("status")
+                    evidence = evaluation.get("evidence_available")
+                    knowledge = evaluation.get("knowledge_available")
+
+                    st.write(
+                        f"Estado: {status}"
+                    )
+
+                    st.write(
+                        f"Evidencia disponible: {'Sí' if evidence else 'No'}"
+                    )
+
+                    st.write(
+                        f"Conocimiento disponible: {'Sí' if knowledge else 'No'}"
+                    )
+
+
+        else:
+
+            st.write(result)
