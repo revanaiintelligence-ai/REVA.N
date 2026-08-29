@@ -1,6 +1,16 @@
+import sys
+from pathlib import Path
+
 import streamlit as st
 
+ROOT_DIR = Path(__file__).resolve().parent.parent
+
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
 from core.revan_core import REVANCore
+from ai.mock_provider import MockAIProvider
+from ai.orchestrator import AIOrchestrator
 from ai.mock_provider import MockAIProvider
 from ai.orchestrator import AIOrchestrator
 
