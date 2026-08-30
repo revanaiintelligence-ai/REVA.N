@@ -10,7 +10,7 @@ if str(ROOT_DIR) not in sys.path:
 import streamlit as st
 
 from core.revan_core import REVANCore
-from ai.mock_provider import MockAIProvider
+from ai.gemini_provider import GeminiAIProvider
 from ai.orchestrator import AIOrchestrator
 
 
@@ -51,71 +51,95 @@ if st.button("ANALIZAR"):
 
     else:
 
-        # Componentes de REVA.N
-        provider = MockAIProvider()
-        core = REVANCore()
+        try:
 
-        orchestrator = AIOrchestrator(
-            provider,
-            core
-        )
+            # Proveedor real de IA
+            provider = GeminiAIProvider()
 
-        # Ejecutar
-        result = orchestrator.process(question)
+            # Core de REVA.N
+            core = REVANCore()
 
+            # Orquestador
+            orchestrator = AIOrchestrator(
+                provider,
+                core
+            )
 
-        # Resultado
-        st.divider()
-
-        st.subheader("Resultado REVA.N")
-
-
-        # Mostrar respuesta de IA
-        if isinstance(result, dict):
-
-            ai_response = result.get("ai_response")
-
-            if ai_response:
-                st.markdown("### Respuesta")
-                st.write(ai_response)
+            # Ejecutar análisis
+            result = orchestrator.process(question)
 
 
-            # Mostrar análisis del Core
-            core_result = result.get("core_result")
-
-            if core_result:
-
-                st.markdown("### Análisis del Core")
-
-                reasoning = core_result.get("reasoning")
-
-                if reasoning:
-                    st.write(reasoning)
+            # Resultado
+            st.divider()
+            st.subheader("Resultado REVA.N")
 
 
-                evaluation = core_result.get("evaluation")
+            if isinstance(result, dict):
 
-                if evaluation:
+                # Respuesta de Gemini
+                ai_response = result.get("ai_response")
 
-                    st.markdown("### Evaluación")
+                if ai_response:
 
-                    status = evaluation.get("status")
-                    evidence = evaluation.get("evidence_available")
-                    knowledge = evaluation.get("knowledge_available")
+                    st.markdown("### Respuesta")
 
-                    st.write(
-                        f"Estado: {status}"
-                    )
-
-                    st.write(
-                        f"Evidencia disponible: {'Sí' if evidence else 'No'}"
-                    )
-
-                    st.write(
-                        f"Conocimiento disponible: {'Sí' if knowledge else 'No'}"
-                    )
+                    st.write(ai_response)
 
 
-        else:
+                # Resultado del Core
+                core_result = result.get("core_result")
 
-            st.write(result)
+                if core_result:
+
+                    st.markdown("### Análisis del Core")
+
+                    reasoning = core_result.get("reasoning")
+
+                    if reasoning:
+                        st.write(reasoning)
+
+
+                    evaluation = core_result.get("evaluation")
+
+                    if evaluation:
+
+                        st.markdown("### Evaluación")
+
+                        status = evaluation.get("status")
+                        evidence = evaluation.get(
+                            "evidence_available"
+                        )
+                        knowledge = evaluation.get(
+                            "knowledge_available"
+                        )
+
+                        st.write(
+                            f"Estado: {status}"
+                        )
+
+                        st.write(
+                            "Evidencia disponible: "
+                            f"{'Sí' if evidence else 'No'}"
+                        )
+
+                        st.write(
+                            "Conocimiento disponible: "
+                            f"{'Sí' if knowledge else 'No'}"
+                        )
+
+
+            else:
+
+                st.write(result)
+
+
+        except Exception as error:
+
+            st.error(
+                "REVA.N encontró un error al procesar "
+                "la solicitud."
+            )
+
+            st.caption(
+                str(error)
+            )
