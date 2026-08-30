@@ -5,21 +5,21 @@ Connects REVA.N to Google Gemini API
 using the GEMINI_API_KEY stored in Streamlit Secrets.
 """
 
-import os
-
+import streamlit as st
 from google import genai
 
 
 class GeminiAIProvider:
 
     def __init__(self):
+
         self.name = "Google Gemini"
 
-        api_key = os.getenv("GEMINI_API_KEY")
+        api_key = st.secrets.get("GEMINI_API_KEY")
 
         if not api_key:
             raise RuntimeError(
-                "GEMINI_API_KEY no está configurada."
+                "GEMINI_API_KEY no está configurada en Streamlit Secrets."
             )
 
         self.client = genai.Client(
