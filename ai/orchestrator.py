@@ -1,11 +1,13 @@
 """
-REVA.N AI Orchestrator
+REVA.N AI Orchestrator v0.2
 
-Coordinates the AI provider and REVA.N Core.
+Coordinates:
+REVA.N Core → structured context → AI provider → response
 """
 
+
 REVA_N_SYSTEM_CONTEXT = """
-You are the AI reasoning provider operating inside REVA.N.
+You are the AI provider operating inside REVA.N.
 
 REVA.N means:
 Reasoning Engine for Vision and Analysis Networking.
@@ -14,60 +16,118 @@ REVA.N is a proprietary reasoning architecture designed to
 structure information, variables, relationships and context
 in order to support analysis and human decision-making.
 
-Important rules:
+IMPORTANT:
 
-1. When the user asks about REVA.N, understand that they are
-   referring to this REVA.N system, not to an external company,
-   financial ticker, application, vehicle or unrelated entity.
-
-2. Do not replace the identity of REVA.N with information about
-   unrelated entities that happen to use the name REVA or REVAN.
-
-3. The AI provider is a component used by REVA.N.
-   The AI provider itself is NOT REVA.N.
-
-4. REVA.N does not make decisions for humans.
-   It structures analysis and supports human decision-making.
-
-5. Distinguish clearly between:
-   - REVA.N architecture
-   - AI provider
-   - REVA.N Core
-   - application-specific subsystems
-
-6. If information is unavailable, say so instead of inventing it.
-
-7. Answer in the language used by the user.
+- REVA.N is the name of the system you are operating inside.
+- Do not confuse REVA.N with external companies, financial
+  tickers, applications, universities, vehicles or unrelated
+  entities.
+- The AI provider is a component of REVA.N.
+- The AI provider itself is NOT REVA.N.
+- REVA.N does not make decisions for humans.
+- REVA.N structures analysis and supports human decision-making.
+- If the REVA.N Core provides context, that context has priority
+  when interpreting the user's question.
+- Do not replace REVA.N's identity with unrelated external
+  meanings unless the user explicitly asks about those meanings.
+- If information is unavailable, say so instead of inventing it.
+- Answer in the language used by the user.
 """
 
 
 class AIOrchestrator:
 
     def __init__(self, ai_provider, revan_core):
+
         self.ai_provider = ai_provider
         self.revan_core = revan_core
 
     def process(self, question: str):
         """
-        Sends the question to the AI provider with
-        REVA.N system context and then processes it
-        through REVA.N Core.
+        Executes:
+
+        1. REVA.N Core analysis
+        2. Context extraction
+        3. AI reasoning
+        4. Final structured result
         """
+
+        # -------------------------------------------------
+        # STEP 1 — REVA.N CORE
+        # -------------------------------------------------
+
+        core_result = self.revan_core.run(question)
+
+        context = core_result.get(
+            "context",
+            {}
+        )
+
+        reasoning = core_result.get(
+            "reasoning",
+            ""
+        )
+
+        evaluation = core_result.get(
+            "evaluation",
+            {}
+        )
+
+        # -------------------------------------------------
+        # STEP 2 — BUILD CONTROLLED PROMPT
+        # -------------------------------------------------
 
         prompt = f"""
 {REVA_N_SYSTEM_CONTEXT}
 
-USER QUESTION:
+REVA.N CORE ANALYSIS
+====================
+
+User question:
 {question}
 
-Provide the best answer you can based on the available
-information. Keep the identity of REVA.N consistent with
-the context above.
+Detected domain:
+{context.get("domain")}
+
+Detected subject:
+{context.get("subject")}
+
+Is this a REVA.N question?
+{context.get("is_revan_question")}
+
+Core reasoning:
+{reasoning}
+
+Core evaluation:
+{evaluation}
+
+
+INSTRUCTION
+
+Use the REVA.N Core analysis above as the primary context
+for interpreting the user's question.
+
+If the Core identifies the subject as REVA.N, answer about
+the REVA.N system described in this prompt.
+
+Do NOT answer about REVA Medical, NYSE tickers, Mahindra REVA,
+REVA University, REVA apps, or other external entities unless
+the user explicitly asks about one of them.
+
+Now answer the user's question clearly and directly.
 """
 
-        ai_response = self.ai_provider.generate(prompt)
+        # -------------------------------------------------
+        # STEP 3 — AI PROVIDER
+        # -------------------------------------------------
 
-        core_result = self.revan_core.run(question)
+        ai_response = self.ai_provider.generate(
+            prompt
+        )
+
+        # -------------------------------------------------
+        # STEP 4 — FINAL RESULT
+        # -------------------------------------------------
 
         return {
             "question": question,
